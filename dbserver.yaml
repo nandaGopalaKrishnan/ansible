@@ -1,0 +1,35 @@
+---
+  
+- hosts: dbservers
+  become: yes
+  #gather_facts: False
+ 
+
+  tasks:
+  - name: install mysql-server
+    yum:
+      name: mysql-server
+      state: installed
+    when: ansible_os_family == "RedHat"
+  
+  - name: start mysql service
+    service:
+      name: mysqld
+      state: started
+ 
+  - name: install MySQL-python
+    yum:
+      name: MySQL-python
+      state: installed 
+
+  - name: create a db_user
+    mysql_user:
+      name: db-user
+      password: dbuser
+      priv: '*.*:ALL'
+      state: present
+
+  - name: create a database
+    mysql_db:
+      name: gang-bang
+      state: present

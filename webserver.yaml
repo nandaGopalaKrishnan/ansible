@@ -1,0 +1,61 @@
+---
+
+- hosts: webservers
+  become: yes
+  gather_facts: False
+  
+  vars:
+    vagrant_path: /home/vagrant/dir1
+    nam: anisible
+
+  vars_prompt:
+    - name: "package"
+      prompt: "enter a package"
+
+  tasks:
+  - debug: 
+      msg: "Practising {{ nam }} in Room"
+
+  - name: Installing apache2 on webserver
+    apt:
+      name: "{{ package }}"
+      state: present
+      update_cache: yes
+
+  - name: Starting apache2 service
+    service:
+      name: apache2
+      state: started
+
+  - name: Creating a empty directory
+    file:
+      dest: "{{vagrant_path}}"
+      state: directory
+
+  - name: create empty file
+    file:
+      path: /home/vagrant/dir1/test.pdf
+      state: touch
+
+  - name: create a link file
+    file:
+      src: /home/vagrant/dir2
+      dest: /home/vagrant/dir_soft
+      state: link
+      force: yes
+
+  - name: cpy a file
+    copy:
+      src: /home/vagrant/targarean
+      dest: /home/vagrant/dir1
+    notify: apache restart
+
+  handlers:
+    - name: apache restart
+      service:
+        name: apache2
+        state: restarted
+
+    - shell: whoami  
+      register: username
+
