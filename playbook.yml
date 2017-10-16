@@ -1,0 +1,25 @@
+---
+  - hosts: webservers
+    become: yes
+    
+    tasks:
+    - name: install apachae
+      apt: 
+        name: apache2
+        state: installed
+
+    - name: dir creation
+      file:
+        path: /home/vagrant/ansible
+        state: directory
+  - hosts: dbservers
+    become: yes
+
+    tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: present
+
+
+  

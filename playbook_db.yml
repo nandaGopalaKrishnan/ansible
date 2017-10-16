@@ -1,0 +1,40 @@
+---
+  - hosts: dbservers
+    become: yes
+    
+    tasks:
+    - name: install mysql
+      yum:
+        name: mysql-server
+        state: installed
+      when: ansible_os_family == "RedHat" 
+  
+    - name: install MySQL-python
+      yum:
+        name: MySQL-python
+        state: installed
+   
+    - name: create database
+      mysql_db: 
+        name: nandhu_db
+        state: present
+    - name: create user
+      mysql_user:
+        name: nandhu2
+        password: nandhu
+        priv: '*.*:ALL'
+        state: present
+    - name: copying sql file
+      copy:
+        src: /home/vagrant/ansible/Sample-SQL-File-10-Rows.sql
+        dest: /tmp
+    - name: restore to database
+      mysql_db:
+        name: nandhu_db
+        state: import
+        target: /tmp/Sample-SQL-File-10-Rows.sql
+
+    - name: mysql restart
+      service:
+        name: mysqld
+        state: restarted
